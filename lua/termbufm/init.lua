@@ -34,9 +34,6 @@ local TermBufMOpen = function()
 
         -- change name of buffer
         vim.api.nvim_buf_set_name(termbufm_buffer, 'termbufm_b')
-        
-        -- unload the buffer when close
-        vim.bo[termbufm_buffer].bufhidden = 'unload'
 
         -- don't show in buffer list
         vim.bo[termbufm_buffer].buflisted = false
@@ -57,7 +54,7 @@ end
 
 local TermBufMClose = function()
     if vim.api.nvim_buf_is_loaded(termbufm_buffer) then
-        vim.api.nvim_win_hide(termbufm_window)
+        vim.api.nvim_buf_delete(termbufm_buffer, { unload = true })
     end
 end
 
