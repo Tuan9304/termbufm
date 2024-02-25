@@ -42,7 +42,7 @@ local TermBufMOpen = function()
         vim.wo[termbufm_window].number = false
         vim.wo[termbufm_window].relativenumber = false
 
-    elseif not vim.api.nvim_buf_is_loaded(termbufm_buffer) then
+    elseif not vim.api.nvim_win_is_valid(termbufm_window) then
         -- open the buffer in a split window
         vim.cmd(direction)
 
@@ -53,13 +53,13 @@ local TermBufMOpen = function()
 end
 
 local TermBufMClose = function()
-    if vim.api.nvim_buf_is_loaded(termbufm_buffer) then
-        vim.api.nvim_buf_delete(termbufm_buffer, { unload = true, force = true })
+    if vim.api.nvim_win_is_valid(termbufm_window) then
+        vim.api.nvim_win_hide(termbufm_window)
     end
 end
 
 local TermBufMToggle = function()
-    if vim.api.nvim_buf_is_loaded(termbufm_buffer) then
+    if vim.api.nvim_win_is_valid(termbufm_window) then
         TermBufMClose()
     else
         TermBufMOpen()
