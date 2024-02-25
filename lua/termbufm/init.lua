@@ -54,7 +54,7 @@ end
 
 local TermBufMClose = function()
     if vim.api.nvim_buf_is_loaded(termbufm_buffer) then
-        vim.api.nvim_buf_delete(termbufm_buffer, { unload = true })
+        vim.api.nvim_buf_delete(termbufm_buffer, { unload = true, force = true })
     end
 end
 
