@@ -1,6 +1,7 @@
 local termbufm_window = -1
 local termbufm_buffer = -1
 local termbufm_job_id = -1
+local termbufm_cache = {}
 
 local config = {
     termbufm_direction_cmd = 'new',
@@ -16,7 +17,14 @@ local setup = function(opts)
     if opts == nil then
         return
     end
-    -- TODO: add setup
+
+    if opts.termbufm_direction_cmd == 'vnew' then
+        config.termbufm_direction_cmd = 'vnew'
+    end
+
+    if type(opts.termbufm_code_scripts) == 'table' then
+        config.termbufm_code_scripts = opts.termbufm_code_scripts
+    end
 end
 
 local TermBufMOpen = function()
@@ -85,11 +93,25 @@ end
 local TermBufMExecCodeScript = function(filetype, commandtype)
     assert(config.termbufm_code_scripts[filetype] ~= nil, "filetype not found: " .. filetype)
     assert(config.termbufm_code_scripts[filetype][commandtype] ~= nil, "command type not found: " .. commandtype)
-    -- not complete
+
+    if termbufm_cache[filetype] == nil then
+        termbufm_cache[filetype] = { commandtype = nil }
+    end
+    
+    if termbufm_cache[filetype][commandtype] == nil then
+        local fmtstr = config.termbufm_code_scripts[filetype][commandtype]
+        for i = 2,#fmtstr do
+            fmtstr[i] = vim.fn.expand(fmtstr[i])
+        end
+        termbufm_cache[filetype][commandtype] = vim.fn.call('printf', fmtstr)
+    end
+
+    TermBufMExec(termbufm_cache[filetype][commandtype])
 end
 
 return {
     setup = setup,
     toggle = TermBufMToggle,
-    exec = TermBufMExecCodeScript,
+    code_exec = TermBufMExecCodeScript,
+    exec = TermBufMExec,
 }
