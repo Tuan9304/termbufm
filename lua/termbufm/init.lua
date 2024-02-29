@@ -54,9 +54,13 @@ local TermBufMOpen = function()
         -- open the buffer in a split window
         vim.cmd(direction)
 
-        termbufm_window = vim.api.nvim_get_current_win()
+        local temp_buf = vim.api.nvim_get_current_buf()
 
+        termbufm_window = vim.api.nvim_get_current_win()
+        
         vim.api.nvim_win_set_buf(termbufm_window, termbufm_buffer)
+
+        vim.api.nvim_buf_delete(temp_buf, { force = true })
     end
 end
 
@@ -76,7 +80,7 @@ end
 
 local TermBufMExec = function(cmd)
     -- open if needed
-    if not vim.api.nvim_buf_is_loaded(termbufm_buffer) then
+    if not vim.api.nvim_win_is_valid(termbufm_window) then
         TermBufMOpen()
     end
 
